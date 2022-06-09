@@ -19,36 +19,76 @@ class RouteViewController: UIViewController {
         return map
     }()
     
-    let addAddressButton = UIButton(type: .system)
-    let routeButton = UIButton(type: .system)
-    let resetButton = UIButton(type: .system)
+    let addAddressButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Add Adress", for: .normal)
+        button.tintColor = .white
+        button.backgroundColor = .systemGray
+        button.clipsToBounds = true
+        button.layer.cornerRadius = 16
+        return button
+    }()
+    
+    let routeButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Route", for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.backgroundColor = .systemGray
+        button.clipsToBounds = true
+        button.layer.cornerRadius = 16
+        button.isHidden = true
+        return button
+    }()
+    let resetButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Reset", for: .normal)
+        button.tintColor = .red
+        button.backgroundColor = .systemGray
+        button.clipsToBounds = true
+        button.layer.cornerRadius = 16
+        button.isHidden = true
+        return button
+    }()
+    
     var annoationStorage = [MKAnnotation]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupUIElements()
+        view.backgroundColor = .systemBackground
+        
+        mapView.delegate = self
+
+        addSubiews()
+        applyConstraints()
+        callActions()
     }
 
+    private func callActions() {
+        addAddressButton.addTarget(self, action: #selector(addAddressButtonTapped), for: .touchUpInside)
+        routeButton.addTarget(self, action: #selector(routeButtonTapped), for: .touchUpInside)
+        resetButton.addTarget(self, action: #selector(resetButtonTapped), for: .touchUpInside)
+    }
+    
+    
 
 }
 
 // MARK: - Setup UI Elements
 extension RouteViewController {
     
-    private func setupUIElements() {
-        
-        createMapViewConstraints()
-        
-        setupAddAddressButton()
-        setupRouteButton()
-        setupResetButton()
-        
+    private func addSubiews() {
+        view.addSubview(mapView)
+        mapView.addSubview(addAddressButton)
+        mapView.addSubview(routeButton)
+        mapView.addSubview(resetButton)
     }
     
-    private func createMapViewConstraints() {
-        view.addSubview(mapView)
-        mapView.delegate = self
+    
+    private func applyConstraints() {
         
         NSLayoutConstraint.activate([
             mapView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -57,42 +97,13 @@ extension RouteViewController {
             mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
-    }
-    
-    private func setupAddAddressButton() {
-        
-        mapView.addSubview(addAddressButton)
-        addAddressButton.translatesAutoresizingMaskIntoConstraints = false
-        addAddressButton.setTitle("Add Adress", for: .normal)
-        addAddressButton.backgroundColor = .systemPink
-        addAddressButton.addTarget(self, action: #selector(addAddressButtonTapped), for: .touchUpInside)
-        
-        addAddressButton.backgroundColor = .firstGColor()
-        
-        addAddressButton.clipsToBounds = true
-        addAddressButton.layer.cornerRadius = 16
-        
         NSLayoutConstraint.activate([
             addAddressButton.topAnchor.constraint(equalTo: mapView.topAnchor, constant: 50),
             addAddressButton.leadingAnchor.constraint(equalTo: mapView.leadingAnchor, constant: 40),
             addAddressButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -40),
             addAddressButton.heightAnchor.constraint(equalToConstant: 50)
         ])
-    }
-    
-    private func setupRouteButton() {
         
-        mapView.addSubview(routeButton)
-        routeButton.translatesAutoresizingMaskIntoConstraints = false
-        routeButton.setTitle("Route", for: .normal)
-        routeButton.addTarget(self, action: #selector(routeButtonTapped), for: .touchUpInside)
-        routeButton.setTitleColor(UIColor.white, for: .normal)
-        routeButton.backgroundColor = .firstGColor()
-        
-        routeButton.clipsToBounds = true
-        routeButton.layer.cornerRadius = 16
-        
-        routeButton.isHidden = true
         
         NSLayoutConstraint.activate([
             routeButton.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -110),
@@ -100,20 +111,6 @@ extension RouteViewController {
             routeButton.heightAnchor.constraint(equalToConstant: 50),
             routeButton.widthAnchor.constraint(equalToConstant: 100)
         ])
-    }
-    
-    private func setupResetButton() {
-        mapView.addSubview(resetButton)
-        resetButton.translatesAutoresizingMaskIntoConstraints = false
-        resetButton.setTitle("Reset", for: .normal)
-        resetButton.backgroundColor = .systemYellow
-        resetButton.addTarget(self, action: #selector(resetButtonTapped), for: .touchUpInside)
-        resetButton.backgroundColor = .firstGColor()
-        
-        resetButton.clipsToBounds = true
-        resetButton.layer.cornerRadius = 16
-        
-        resetButton.isHidden = true
         
         NSLayoutConstraint.activate([
             resetButton.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -30),
@@ -121,9 +118,7 @@ extension RouteViewController {
             resetButton.heightAnchor.constraint(equalToConstant: 50),
             resetButton.widthAnchor.constraint(equalToConstant: 100)
         ])
-        
     }
-    
 }
 
 // MARK: - Action for Buttons
